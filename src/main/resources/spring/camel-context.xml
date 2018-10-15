@@ -65,7 +65,7 @@
             <!--<marshal ref="jackson"/>-->
             <log message="Inside main body, type is: ${body.class.name}"/>
 
-            <bean ref="restUtils" method="doPost('http://localhost:8081/api/flight', ${body})"/>
+            <bean ref="restUtils" method="doPost({{flight-search.service.url}}, ${body})"/>
             <!--<to uri="http4://localhost:8081/api/flight"/>-->
 
             <log message="Body after call is ${body}"/>
@@ -140,7 +140,7 @@
             </recipientList>
             -->
 
-            <bean ref="restUtils" method="doPost('http://localhost:8082/api/booking', ${body})"/>
+            <bean ref="restUtils" method="doPost({{flight-booking.service.url}}, ${body})"/>
             <setBody>
                 <groovy>
                     import org.codehaus.jackson.map.ObjectMapper
