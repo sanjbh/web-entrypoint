@@ -139,8 +139,13 @@
                 <simple>google-pubsub:${properties-location:spring.cloud.gcp.project-id}:demo-response-subscription?connectionFactory=#gcpConnectionFactory</simple>
             </recipientList>
             -->
+            <hystrix>
+                <bean ref="restUtils" method="doPost({{flight-booking.service.url}}, ${body})"/>
+                <onFallback>
+                    <to uri="direct:fakeBooking"/>
+                </onFallback>
+            </hystrix>
 
-            <bean ref="restUtils" method="doPost({{flight-booking.service.url}}, ${body})"/>
             <setBody>
                 <groovy>
                     import org.codehaus.jackson.map.ObjectMapper
@@ -154,6 +159,25 @@
             <!--<to uri="http4://localhost:8082/api/booking"/>-->
 
             <log message="Response type from booking service: ${body.class.name}"/>
+        </route>
+
+        <route id="fakeBookingRoute">
+            <from uri="direct:fakeBooking"/>
+            <setBody>
+                <groovy>
+                    def map = [:]
+                    map.put('bookingId', 7777)
+                    map.put('customerName', 'ServiceNotAvailable.FakeCustomer')
+                    map.put('airline', 'ServiceNotAvailable.FakeAirline')
+                    map.put('departure', 'ServiceNotAvailable.FakeStartCity')
+                    map.put('destination', 'ServiceNotAvailable.FakeEndCity')
+                    map.put('departureDate', new Date())
+                    map.put('flightClass', 'ServiceNotAvailable.FakeFlightClass')
+                    map.put('price', 7777)
+
+                    return map
+                </groovy>
+            </setBody>
         </route>
     </camelContext>
 
